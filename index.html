@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bump Ticket — a daily scratch-off for your growing baby</title>
+<meta name="description" content="Scratch off a new ticket every day to see how big the baby is, compared to something a little ridiculous.">
+<meta name="theme-color" content="#1B1033">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bump Ticket">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style>
+  :root{
+    --ink:#1B1033;
+    --plum:#2E1B54;
+    --plum-2:#3B2468;
+    --gold:#E8B657;
+    --gold-deep:#C7913A;
+    --mint:#7FD8BE;
+    --coral:#FF7A6B;
+    --cream:#FFF6E9;
+    --cream-dim:rgba(255,246,233,.80);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none !important}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 50% -10%, #3B2468 0%, rgba(59,36,104,0) 70%),
+      radial-gradient(600px 400px at 100% 100%, #2E1B54 0%, rgba(46,27,84,0) 65%),
+      var(--ink);
+    background-attachment:fixed;
+    color:var(--cream);
+    font-family:"Karla",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.55;
+    min-height:100vh;
+    padding:18px 16px calc(28px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .wrap{width:100%;max-width:440px}
+
+  /* ---------- masthead ---------- */
+  .mast{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .mast h1{
+    font-family:"Fredoka";font-weight:600;font-size:23px;letter-spacing:-.01em;
+    margin:0;color:var(--cream);
+  }
+  .mast h1 span{color:var(--gold)}
+  .mast-right{display:flex;align-items:center;gap:10px}
+  .mast .who{font-size:13px;color:var(--cream-dim)}
+  .home{
+    width:38px;height:38px;flex:none;border:0;border-radius:50%;cursor:pointer;
+    background:var(--gold);color:#241634;
+    font-family:"Fredoka";font-weight:600;font-size:21px;line-height:1;
+    display:grid;place-items:center;padding:0 0 2px;
+  }
+  .home:active{transform:translateY(1px)}
+
+  /* ---------- setup card ---------- */
+  .setup{
+    background:linear-gradient(180deg,var(--plum-2),var(--plum));
+    border:1px solid rgba(232,182,87,.25);
+    border-radius:var(--radius);padding:22px 20px;margin-top:4vh;overflow:hidden;
+  }
+  .setup h2{font-family:"Fredoka";font-weight:600;font-size:24px;margin:0 0 6px;line-height:1.2}
+  .setup p{margin:0 0 16px;color:var(--cream-dim);font-size:15px}
+  label{display:block;font-size:14px;color:var(--cream-dim);margin-bottom:6px}
+  input[type=date],input[type=text]{
+    display:block;width:100%;max-width:100%;min-width:0;
+    padding:13px 14px;font-size:16px;font-family:inherit;
+    background:rgba(0,0,0,.28);color:var(--cream);
+    border:1px solid rgba(255,246,233,.22);border-radius:12px;
+    -webkit-appearance:none;appearance:none;text-align:left;
+  }
+  input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+  input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.6)}
+  input:focus-visible,button:focus-visible,a:focus-visible{outline:2.5px solid var(--mint);outline-offset:2px}
+  .btn{
+    display:block;width:100%;margin-top:14px;padding:14px;
+    font-family:"Fredoka";font-weight:600;font-size:17px;
+    background:var(--gold);color:#241634;border:0;border-radius:12px;cursor:pointer;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:#3A2668;color:#FFF6E9;border:1.5px solid rgba(232,182,87,.45);font-size:15px}
+
+  .flag{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    font-family:"Fredoka";font-weight:600;font-size:15px;
+    padding:9px 14px;margin-bottom:10px;border-radius:999px;text-align:center;
+  }
+  .flag.now{background:var(--gold);color:#241634}
+  .flag.past{background:#33205F;color:var(--cream);border:1.5px solid rgba(232,182,87,.4);font-weight:500}
+  .flag .sub{font-weight:400;opacity:.75}
+
+  /* ---------- ticket ---------- */
+  .ticket{
+    position:relative;
+    background:linear-gradient(178deg,#3E2670 0%,#2B1950 100%);
+    border-radius:var(--radius);
+    padding:16px 16px 20px;
+    box-shadow:0 18px 40px -18px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,246,233,.08);
+    overflow:hidden;
+  }
+  .ticket::before,.ticket::after{
+    content:"";position:absolute;width:26px;height:26px;border-radius:50%;
+    background:var(--ink);top:var(--notch,232px);
+  }
+  .ticket::before{left:-13px}
+  .ticket::after{right:-13px}
+
+  .stub{display:flex;justify-content:space-between;align-items:center;
+    font-family:"Fredoka";font-weight:500;font-size:14px;color:var(--gold);
+    letter-spacing:.02em;margin-bottom:12px}
+  .stub b{font-weight:600;color:var(--cream)}
+  .stub .serial{font-variant-numeric:tabular-nums;color:var(--cream-dim);font-weight:400}
+
+  /* scratch panel */
+  .panel{position:relative;border-radius:14px;overflow:hidden;
+    background:radial-gradient(120% 100% at 50% 0%, #58398F 0%, #33205F 70%);
+    aspect-ratio:1/.92;display:grid;place-items:center;
+    border:1px solid rgba(232,182,87,.22);
+  }
+  .prize{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:16px;gap:2px;width:100%}
+  .prize .glyph{font-size:clamp(74px,22vw,104px);line-height:1.05;
+    filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}
+  .prize .kicker{font-size:13px;color:var(--cream-dim)}
+  .prize .name{font-family:"Fredoka";font-weight:600;font-size:clamp(24px,7vw,31px);
+    line-height:1.15;color:var(--cream)}
+  .prize .blurb{font-size:14.5px;color:var(--mint);font-style:italic;margin-top:6px;max-width:32ch}
+  canvas.scratch{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+  canvas.scratch:active{cursor:grabbing}
+  canvas.scratch.gone{opacity:0;pointer-events:none;transition:opacity .5s ease}
+  .hint{position:absolute;inset:auto 0 14px;text-align:center;font-family:"Fredoka";
+    font-size:14px;color:rgba(36,22,52,.72);pointer-events:none}
+  .locked{padding:34px 22px;text-align:center}
+  .locked .glyph{font-size:52px}
+  .locked p{color:var(--cream-dim);font-size:15px;margin:8px 0 0}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .stat{background:rgba(0,0,0,.22);border-radius:12px;padding:10px 12px}
+  .stat .k{font-size:12.5px;color:var(--cream-dim)}
+  .stat .v{font-family:"Fredoka";font-weight:600;font-size:19px;font-variant-numeric:tabular-nums}
+  .stat .v small{font-weight:400;font-size:13px;color:var(--cream-dim);margin-left:3px}
+
+  .facts{list-style:none;margin:14px 0 2px;padding:0;display:flex;flex-direction:column;gap:11px}
+  .facts li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.45;
+    color:var(--cream);max-width:38ch}
+  .facts .m{flex:none;width:22px;text-align:center;font-size:16px;line-height:1.35}
+  .tips{margin-top:16px;padding-top:14px;border-top:1px dashed rgba(232,182,87,.32)}
+  .tips h3{font-family:"Fredoka";font-weight:600;font-size:15px;margin:0 0 10px;color:var(--gold)}
+  .tips ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .tips li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.45;
+    color:var(--cream);max-width:38ch}
+  .tips li::before{content:"•";color:var(--mint);flex:none;width:12px;text-align:center}
+  .hidden-until{display:none}
+  .hidden-until.show{display:block;animation:rise .45s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* control deck — solid surface so text never sits on a light background */
+  .deck{
+    margin-top:14px;padding:14px 14px 12px;border-radius:var(--radius);
+    background:#241546;border:1px solid rgba(232,182,87,.28);
+    box-shadow:0 10px 26px -14px rgba(0,0,0,.85);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .nav button{flex:1}
+  .nav button{
+    font-family:"Fredoka";font-weight:600;font-size:15px;color:#2A1A4D;
+    background:var(--gold);border:0;
+    border-radius:11px;padding:11px 16px;cursor:pointer;
+  }
+  .nav button[disabled]{background:#3A2668;color:rgba(255,246,233,.5);cursor:default}
+  .nav button.quiet{background:#3A2668;color:#FFF6E9;border:1.5px solid rgba(232,182,87,.45)}
+  .nav button[disabled],.nav button.quiet[disabled]{background:#332055;color:rgba(255,246,233,.45);border-color:transparent}
+
+  .tools{display:flex;gap:10px;margin-top:12px}
+  .tools .btn{margin-top:0}
+  .foot{margin:14px 4px 0;text-align:center;font-size:12.5px;color:rgba(255,246,233,.72);line-height:1.55}
+
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms!important;animation-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mast">
+    <h1>Bump <span>Ticket</span></h1>
+    <div class="mast-right">
+      <span class="who" id="whoLine"></span>
+      <button id="home" class="home" title="Back to today" aria-label="Back to today">⌂</button>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <section class="setup" id="setup" hidden>
+    <h2>One ticket a day until the big day.</h2>
+    <p>Scratch off each morning to find out how big the baby is — compared to something slightly ridiculous.</p>
+    <label for="due">Due date</label>
+    <input type="date" id="due">
+    <label for="nick" style="margin-top:14px">Nickname for the bean <span style="opacity:.6">(optional)</span></label>
+    <input type="text" id="nick" placeholder="Peanut" maxlength="18" autocomplete="off">
+    <button class="btn" id="start">Print my tickets</button>
+    <button class="btn ghost" id="cancel" hidden>Cancel</button>
+  </section>
+
+  <!-- MAIN -->
+  <section id="main" hidden>
+    <div class="flag" id="dayFlag"></div>
+    <div class="ticket" id="ticket">
+      <div class="stub">
+        <span id="dayNum">—</span>
+        <span class="serial" id="weekTag">—</span>
+      </div>
+
+      <div class="panel" id="panel">
+        <div class="prize">
+          <div class="glyph">🎟️</div>
+          <div class="kicker">About the size of</div>
+          <div class="name">—</div>
+        </div>
+      </div>
+
+      <div id="reveal" class="hidden-until">
+        <div class="stats">
+          <div class="stat"><div class="k">Length</div><div class="v" id="lenV">—</div></div>
+          <div class="stat"><div class="k">Weight</div><div class="v" id="wtV">—</div></div>
+        </div>
+        <ul class="facts" id="facts"></ul>
+
+        <div class="tips">
+          <h3 id="tipHead"></h3>
+          <ul id="tipList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="deck">
+      <div class="nav">
+        <button id="prev">‹ Earlier day</button>
+        <button id="next">Next day ›</button>
+      </div>
+
+      <div class="tools">
+        <button class="btn ghost" id="edit">Change due date</button>
+      </div>
+
+      <p class="foot">Sizes are friendly averages, not measurements.<br>Every baby grows on their own schedule.</p>
+    </div>
+  </section>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+/* ============================================================
+   DATA — weeks 4 to 40.
+   len/wt are [start, end] for the week; days interpolate between.
+   items: one per day of the week (0 = first day of that week).
+   ============================================================ */
+const WEEKS = {
+4:{len:[0.1,0.2],wt:[0,0],dev:["A ball of cells just burrowed into the uterine wall and started building.","The placenta and the baby are being built from the same original cell.","Most people don't know yet at this point. The body has been busy for two weeks."],items:[
+ {n:"Poppy seed",e:"🌱",b:"Smaller than the dot on this letter i."},
+ {n:"Grain of sugar",e:"🍬",b:"One grain. Not a spoonful. One."},
+ {n:"Flake of pepper",e:"🧂",b:"One twist of the grinder makes about a thousand."},
+ {n:"Grain of sand",e:"🏖️",b:"There are more of these on one beach than stars you can see."},
+ {n:"Speck of glitter",e:"✨",b:"Impossible to find, impossible to get rid of."},
+ {n:"Pen tip",e:"🖊️",b:"That tiny rolling ball is machined to a thousandth of an inch."},
+ {n:"Pinhead",e:"📌",b:"The old riddle about angels dancing? That much room."}]},
+5:{len:[0.2,0.5],wt:[0,0],dev:["The neural tube is closing — the first draft of a brain and spinal cord.","A tiny heart tube forms and will start twitching within days.","The part that becomes the face is currently just a few folds of tissue."],items:[
+ {n:"Chia seed",e:"🥄",b:"Add water and it triples. Do not try this at home."},
+ {n:"Sesame seed",e:"🍔",b:"There are roughly 200 on a burger bun. Sorry, you'll count now."},
+ {n:"Single sprinkle",e:"🧁",b:"The kind that falls off the cupcake and rolls away."},
+ {n:"Crayon tip",e:"🖍️",b:"The very point of the crayon, before anyone presses too hard."},
+ {n:"Ant",e:"🐜",b:"An ant can lift 50 times its weight. Baby cannot yet."},
+ {n:"Grain of rice",e:"🍚",b:"About 50 grains per tablespoon. Baby is one of them."},
+ {n:"Lentil",e:"🫘",b:"Cooks in 20 minutes. Baby takes slightly longer."}]},
+6:{len:[0.5,1.0],wt:[0,0],dev:["A heartbeat often shows up on an early ultrasound this week.","The heart is beating around 110 times a minute and climbing.","Dark spots appear where the eyes and nostrils will go."],items:[
+ {n:"Confetti dot",e:"🎊",b:"One little punched circle of celebration."},
+ {n:"Pencil eraser",e:"✏️",b:"Made of rubber and optimism."},
+ {n:"Ladybug",e:"🐞",b:"Those spots aren't age. That's a myth."},
+ {n:"Apple seed",e:"🍎",b:"The part everyone spits out is this week's headliner."},
+ {n:"Sweet pea",e:"🫛",b:"The original baby-size unit. We'll do better than this."},
+ {n:"Tic Tac",e:"🍬",b:"Officially 1.5 calories. Practically zero. Like this week's weight."},
+ {n:"Aspirin tablet",e:"💊",b:"Same footprint, wildly different effect on your life."}]},
+7:{len:[1.0,1.6],wt:[0,1],dev:["Arm and leg buds appear — paddles with no fingers yet.","The brain is generating roughly 100 new cells every minute.","A tiny tail is still there. It disappears over the next few weeks."],items:[
+ {n:"Coffee bean",e:"☕",b:"Which you are probably drinking less of lately."},
+ {n:"Blueberry",e:"🫐",b:"The classic. We had to do it at least once."},
+ {n:"Kidney bean",e:"🫘",b:"Shaped exactly like the organ it's named after. Bold move."},
+ {n:"Glass marble",e:"🔮",b:"That swirl inside is called a cat's eye."},
+ {n:"Sugar cube",e:"🍬",b:"One cube, one teaspoon, one small square of joy."},
+ {n:"Dime",e:"🪙",b:"The smallest US coin, worth ten times the penny it's smaller than."},
+ {n:"Watch battery",e:"🔋",b:"Small, flat, and somehow powering the whole operation."}]},
+8:{len:[1.6,2.3],wt:[1,2],dev:["Fingers and toes are webbed but present.","The baby is moving already, far too small for you to feel it.","Taste buds are forming on the tongue."],items:[
+ {n:"Bumblebee",e:"🐝",b:"Beats its wings 200 times a second and still looks unbothered."},
+ {n:"Raspberry",e:"🍓",b:"Not one fruit — about 100 tiny ones stuck together."},
+ {n:"Grape",e:"🍇",b:"Give it 45 days in the sun and it's a raisin. Don't."},
+ {n:"Green olive",e:"🫒",b:"Roughly one martini's worth of baby."},
+ {n:"Cherry",e:"🍒",b:"Sweet, round, and about to get much bigger."},
+ {n:"Quarter",e:"🪙",b:"There are 119 ridges around the edge. Somebody counted."},
+ {n:"Postage stamp",e:"📮",b:"Old enough to remember licking these."}]},
+9:{len:[2.3,3.1],wt:[2,4],dev:["Officially a fetus now. Elbows bend and eyelids have formed.","Every essential organ exists at this point. The rest is growth.","Tiny muscles let it flex and stretch on its own."],items:[
+ {n:"Almond",e:"🌰",b:"Technically a seed, not a nut. Nobody's happy about it."},
+ {n:"Bottle cap",e:"🥤",b:"Twist-off or pry-off, same size either way."},
+ {n:"Guitar pick",e:"🎸",b:"Standard 351 shape. Instantly lost in a couch cushion."},
+ {n:"Peanut",e:"🥜",b:"Not a nut. Grows underground. Full of lies."},
+ {n:"LEGO brick",e:"🧱",b:"The 2x4 is 6 studs of pure foot-destroying potential."},
+ {n:"Kumquat",e:"🍊",b:"The one citrus you eat peel and all."},
+ {n:"Paperclip",e:"📎",b:"Straightened out, about 4 inches of wire and bad ideas."}]},
+10:{len:[3.1,4.1],wt:[4,7],dev:["Vital organs are formed and starting to practice their jobs.","Fingernails and toenails begin to appear.","The head is still about half the total length. It evens out later."],items:[
+ {n:"Brussels sprout",e:"🥬",b:"They bred the bitterness out in the 1990s. Genuinely true."},
+ {n:"Walnut",e:"🌰",b:"Looks suspiciously like a tiny brain. Fitting, this week."},
+ {n:"AirPod",e:"🎧",b:"Currently the most-lost object in North America."},
+ {n:"Strawberry",e:"🍓",b:"Around 200 seeds on the outside, which is just showing off."},
+ {n:"Ping pong ball",e:"🏓",b:"40mm, hollow, and capable of 70 mph in the right hands."},
+ {n:"Golf ball",e:"⛳",b:"336 dimples on a standard one. They make it fly twice as far."},
+ {n:"Domino",e:"🀄",b:"One tile. The whole chain starts somewhere."}]},
+11:{len:[4.1,5.4],wt:[7,14],dev:["Tooth buds form under the gums for teeth that arrive in a year.","The baby can open and close its fists.","Hiccup-like movements start, though no air is involved."],items:[
+ {n:"Wine cork",e:"🍷",b:"Cut from bark that regrows. The tree is fine."},
+ {n:"AA battery",e:"🔋",b:"Powers a TV remote for two years or a toy for nine minutes."},
+ {n:"Book of matches",e:"🔥",b:"Twenty matches, folded flat, mostly nostalgia now."},
+ {n:"Golf tee",e:"⛳",b:"Invented in 1899. Before that, people used piles of sand."},
+ {n:"AirPods case",e:"🎧",b:"The thing you lose, containing the things you lose."},
+ {n:"Fig",e:"🫒",b:"Fig wasps pollinate them. That's all we'll say about figs."},
+ {n:"Chicken egg",e:"🥚",b:"A small one. The kind that hides at the back of the carton."}]},
+12:{len:[5.4,7.4],wt:[14,23],dev:["Reflexes kick in — poke your belly and the baby may wiggle away.","The kidneys start producing urine, which goes into the amniotic fluid.","Vocal cords are forming, years ahead of the first word."],items:[
+ {n:"Lime",e:"🍋",b:"End of the first trimester, marked with the appropriate garnish."},
+ {n:"Zippo lighter",e:"🔥",b:"Guaranteed for life. Same energy as a parent, honestly."},
+ {n:"Plum",e:"🍑",b:"Dried, it becomes a prune and gets a reputation."},
+ {n:"Matchbox car",e:"🚗",b:"Sized to fit through a mail slot. That was the whole design brief."},
+ {n:"Shot glass",e:"🥃",b:"Which you are absolutely not using right now."},
+ {n:"Tennis ball",e:"🎾",b:"They were white until 1972, when TV demanded neon."},
+ {n:"Nectarine",e:"🍑",b:"A peach with the fuzz gene switched off. That's the only difference."}]},
+13:{len:[7.4,8.7],wt:[23,43],dev:["Fingerprints are forming — a pattern nobody else will ever have.","The intestines move from the umbilical cord into the abdomen.","Bones are hardening, especially the skull and the long bones."],items:[
+ {n:"Roll of quarters",e:"🪙",b:"Forty of them. Ten dollars of laundry."},
+ {n:"Baseball",e:"⚾",b:"108 stitches, sewn by hand, every single one."},
+ {n:"Peach",e:"🍑",b:"Fuzzy on purpose. The fuzz keeps bugs off."},
+ {n:"Kiwi",e:"🥝",b:"Named after a bird, from China, grown in New Zealand. Chaos."},
+ {n:"Hockey puck",e:"🏒",b:"Frozen before every game so it doesn't bounce."},
+ {n:"Lipstick",e:"💄",b:"The bullet shape has barely changed since 1915."},
+ {n:"Lemon",e:"🍋",b:"Floats in water. An orange sinks. Nobody knows why we know this."}]},
+14:{len:[8.7,10.1],wt:[43,70],dev:["The baby can squint, frown, and grimace. Full facial rehearsal.","Fine hair called lanugo starts covering the body for warmth.","The liver and spleen begin doing real work."],items:[
+ {n:"Apple",e:"🍎",b:"A quarter of an apple is air. It's why they float."},
+ {n:"Turnip",e:"🥔",b:"Jack-o'-lanterns were carved from these before pumpkins."},
+ {n:"Rubber duck",e:"🦆",b:"The big classic one. Bath time is coming."},
+ {n:"Deck of cards",e:"🃏",b:"Shuffle it well and that order has never existed before."},
+ {n:"Bar of soap",e:"🧼",b:"Fresh, unused, corners still sharp."},
+ {n:"Onion",e:"🧅",b:"Chill it first and it won't make you cry. Mostly."},
+ {n:"Coffee mug",e:"☕",b:"The good one. The one you hide at the back of the cabinet."}]},
+15:{len:[10.1,11.6],wt:[70,100],dev:["Baby can sense light through closed eyelids and may turn away from it.","The legs have finally grown longer than the arms.","Bones show up clearly on an ultrasound now."],items:[
+ {n:"Softball",e:"🥎",b:"Not soft. Never was. The name is a 140-year-old lie."},
+ {n:"Pear",e:"🍐",b:"Ripens from the inside out, which is why it's always wrong."},
+ {n:"Harmonica",e:"🎼",b:"Ten holes, twenty reeds, and no way to play it quietly."},
+ {n:"Bagel",e:"🥯",b:"Boiled before it's baked. That's the entire secret."},
+ {n:"Pomegranate",e:"🍎",b:"Around 600 seeds inside. Nobody has ever counted twice."},
+ {n:"Cupcake",e:"🧁",b:"With the frosting piled high. Height counts."},
+ {n:"Cassette tape",e:"📼",b:"Ninety minutes, if you flipped it. Forty-five if you forgot."}]},
+16:{len:[11.6,13.0],wt:[100,140],dev:["Tiny bones are hardening, and the baby may start hearing your voice.","The heart is pumping about 25 quarts of blood a day.","Toenails are starting to grow in."],items:[
+ {n:"Light bulb",e:"💡",b:"The classic pear-shaped one, still the symbol for a good idea."},
+ {n:"Wallet",e:"👛",b:"About to hold pictures instead of cash."},
+ {n:"Heirloom tomato",e:"🍅",b:"Lumpy, ugly, and better than the pretty ones."},
+ {n:"Computer mouse",e:"🖱️",b:"The first one, in 1964, was a block of wood with two wheels."},
+ {n:"Croissant",e:"🥐",b:"Roughly 27 layers of dough and butter, folded three times."},
+ {n:"Avocado",e:"🥑",b:"Ripens only after picking. The tree is the fridge."},
+ {n:"Bell pepper",e:"🫑",b:"Red, yellow and green are the same pepper at different ages."}]},
+17:{len:[13.0,14.2],wt:[140,190],dev:["Fat is building under the skin. Sweat glands show up too.","The umbilical cord is thickening and getting stronger.","The skeleton is shifting from soft cartilage into real bone."],items:[
+ {n:"Pinecone",e:"🌲",b:"Opens in dry weather, closes when it's damp. A tiny barometer."},
+ {n:"Rutabaga",e:"🥔",b:"A cabbage crossed with a turnip. Sweden's fault, apparently."},
+ {n:"Soda can",e:"🥤",b:"Recycled and back on a shelf in about 60 days."},
+ {n:"Passport",e:"🛂",b:"Someone in there is going to need one eventually."},
+ {n:"Grapefruit",e:"🍊",b:"A happy accident — an orange crossed with a pomelo in Barbados."},
+ {n:"Egg carton row",e:"🥚",b:"Three eggs, side by side."},
+ {n:"Pocket notebook",e:"📓",b:"Bought with big plans. Three pages used."}]},
+18:{len:[14.2,15.3],wt:[190,240],dev:["Ears have moved into position and the baby is definitely listening.","Loud noises outside may make the baby startle.","A protective coating called myelin starts wrapping the nerves."],items:[
+ {n:"Sharpie",e:"🖊️",b:"Permanent since 1964. Ask any wall."},
+ {n:"Mango",e:"🥭",b:"More of these are eaten worldwide than any other fruit."},
+ {n:"Sunglasses",e:"🕶️",b:"Folded, arms crossed, ready for a summer that will look different."},
+ {n:"Hot dog",e:"🌭",b:"The bun is a sandwich debate we're not entering."},
+ {n:"Sweet potato",e:"🍠",b:"Not related to a potato at all. Distant cousin of morning glory."},
+ {n:"Phone",e:"📱",b:"Which now has 4,000 photos of a bump on it."},
+ {n:"Taco",e:"🌮",b:"Held at the correct 45-degree angle."}]},
+19:{len:[15.3,16.4],wt:[240,300],dev:["Vernix forms — a waxy natural waterproofing for the skin.","If it's a girl, her ovaries already hold millions of eggs.","This is often when the first real kicks become unmistakable."],items:[
+ {n:"Ice cream cone",e:"🍦",b:"Invented at a fair when a waffle vendor rescued a guy who ran out of dishes."},
+ {n:"Cantaloupe",e:"🍈",b:"Smell the stem end. That's how you know."},
+ {n:"Cornhole bag",e:"🌽",b:"Six by six, one pound of corn. Or plastic pellets, if we're honest."},
+ {n:"Jicama",e:"🥔",b:"Crunchy like an apple, tastes like a very calm potato."},
+ {n:"Sunglasses case",e:"🕶️",b:"The hard clamshell kind that snaps like a bear trap."},
+ {n:"Pool ball rack",e:"🎱",b:"Three balls across the front row."},
+ {n:"Chocolate bar",e:"🍫",b:"The big one. Meant for sharing, allegedly."}]},
+20:{len:[25.6,26.7],wt:[300,360],dev:["Halfway. From here we measure head to heel, so the number jumps.","The baby is swallowing more, which is good practice for digestion.","Taste buds can now pick up flavors from whatever you ate."],items:[
+ {n:"Banana",e:"🍌",b:"Halfway there — and yes, we finally used the banana."},
+ {n:"Paint brush",e:"🖌️",b:"For a nursery wall that is definitely getting painted. Definitely."},
+ {n:"Carrot",e:"🥕",b:"They were purple until Dutch growers bred orange ones in the 1600s."},
+ {n:"Skillet handle",e:"🍳",b:"Long enough to keep your knuckles off the heat."},
+ {n:"Ear of corn",e:"🌽",b:"Every ear has an even number of rows. Always."},
+ {n:"Cauliflower",e:"🥦",b:"Its shape is a natural fractal — the same pattern at every scale."},
+ {n:"Head of cabbage",e:"🥬",b:"The world record is 138 pounds. That one wasn't for slaw."}]},
+21:{len:[26.7,27.8],wt:[360,430],dev:["The baby swallows a little amniotic fluid each day, practicing digestion.","Bone marrow starts making blood cells.","Movements get coordinated — real kicks instead of flutters."],items:[
+ {n:"Honeydew",e:"🍈",b:"The last melon in the size chart. We're running out of melons."},
+ {n:"Bowling ball",e:"🎳",b:"Every ball has a weight block inside to make it hook."},
+ {n:"Bowling ball",e:"🎳",b:"The heaviest legal one, plus a pound."},
+ {n:"Screwdriver",e:"🪛",b:"For the crib. There will be an extra bolt. There's always one."},
+ {n:"TV remote",e:"📺",b:"Currently between two cushions somewhere."},
+ {n:"Loaf pan",e:"🍞",b:"9 by 5 inches. The banana bread standard."},
+ {n:"Baseball cap",e:"🧢",b:"Brim front, the way it's supposed to be."}]},
+22:{len:[27.8,28.9],wt:[430,501],dev:["Eyebrows and eyelashes arrive, and the grip is getting strong.","The baby can now find and grab the umbilical cord.","Touch is developed enough to explore its own face."],items:[
+ {n:"Slice of pizza",e:"🍕",b:"A New York slice, folded. There's no other way."},
+ {n:"Loaf of bread",e:"🍞",b:"Sliced bread arrived in 1928. Everything before it was just bread."},
+ {n:"Skillet",e:"🍳",b:"Ten inch, cast iron, older than both of you probably."},
+ {n:"Bike pump",e:"🚲",b:"The little frame-mounted kind."},
+ {n:"Head of lettuce",e:"🥬",b:"Romaine, standing up straight."},
+ {n:"Coffee grinder",e:"☕",b:"The burr kind. The loud kind."},
+ {n:"Eggplant",e:"🍆",b:"Botanically a berry. Genuinely. Look it up."}]},
+23:{len:[28.9,30.0],wt:[501,600],dev:["Hearing is sharp enough to recognize familiar voices and songs.","Your voice is the clearest sound in there — it travels through bone.","The lungs practice breathing motions using fluid."],items:[
+ {n:"Watermelon",e:"🍉",b:"A small personal one. The big one comes later."},
+ {n:"Small pumpkin",e:"🎃",b:"A pie pumpkin. Round, heavy, and finally here."},
+ {n:"Dinner plate",e:"🍽️",b:"Plates were 9 inches in the 1960s and are 12 now. Explains a lot."},
+ {n:"Frisbee",e:"🥏",b:"Named after a pie tin company. Students threw the empties."},
+ {n:"Tennis racket",e:"🎾",b:"Head only, not the handle."},
+ {n:"Gallon of milk",e:"🥛",b:"Eight and a half pounds. Baby's not there yet."},
+ {n:"Sheet of paper",e:"📄",b:"Fold it in half seven times and you physically can't do the eighth."}]},
+24:{len:[30.0,34.6],wt:[600,660],dev:["Lungs start making surfactant, the stuff that lets them inflate.","The inner ear is fully formed, which is what controls balance.","Skin is still translucent but starting to fill in."],items:[
+ {n:"Football",e:"🏈",b:"Still called a pigskin. It has never been pigskin."},
+ {n:"Cat's tail",e:"🐈",b:"Cats use them for balance, and for judging you."},
+ {n:"Spaghetti squash",e:"🎃",b:"Bake it, scrape it, and it unravels into noodles. Real magic."},
+ {n:"Toaster",e:"🍞",b:"Two slice, one dial, no idea what the numbers mean."},
+ {n:"Bike helmet",e:"🚲",b:"The one that gets left on the garage floor."},
+ {n:"Teddy bear",e:"🧸",b:"Named after Teddy Roosevelt, who refused to shoot one."},
+ {n:"Umbrella",e:"☂️",b:"Folded up. Fits in a bag, never in the bag you brought."}]},
+25:{len:[34.6,35.6],wt:[660,760],dev:["Hair is coming in with actual color and texture.","The hands are fully formed and the fingerprints are set.","Nostrils open up and breathing practice gets more realistic."],items:[
+ {n:"Work boot",e:"🥾",b:"One boot. The other is by the back door."},
+ {n:"Cutting board",e:"🔪",b:"The small one you actually reach for."},
+ {n:"Rolled newspaper",e:"📰",b:"Sunday edition, thrown at a porch somewhere."},
+ {n:"Watering can",e:"🪴",b:"For the plants that will get less attention soon."},
+ {n:"Cast iron pan",e:"🍳",b:"Twelve inch. Never wash it with soap. Actually, you can — that's a myth."},
+ {n:"Butternut squash",e:"🎃",b:"Cut it in half and the seeds are all in the bottom bulb."},
+ {n:"Coconut",e:"🥥",b:"It floats, which is how it colonized half the world's islands."}]},
+26:{len:[35.6,36.6],wt:[760,875],dev:["Eyes open this week for the first time.","Brain wave activity for sight and sound switches on.","The baby may respond to a flashlight held against your belly."],items:[
+ {n:"Pineapple",e:"🍍",b:"Takes two to three years to grow a single one. Patience is a theme."},
+ {n:"Cantaloupe",e:"🍈",b:"Two of them, end to end."},
+ {n:"Romaine lettuce",e:"🥬",b:"Named after Rome, where it apparently thrived."},
+ {n:"Mini watermelon",e:"🍉",b:"The joke everyone makes. It's finally accurate."},
+ {n:"Bag of flour",e:"🍞",b:"Seven of the five-pound bags. Roughly."},
+ {n:"Vinyl record",e:"💿",b:"Twelve inches, 33⅓ rotations a minute, worth the ritual."},
+ {n:"Ruler",e:"📏",b:"A full foot, and every mark on it now feels personal."}]},
+27:{len:[36.6,37.6],wt:[875,1000],dev:["Baby has hiccups now. You may feel them as rhythmic little taps.","Sleep and wake cycles are becoming regular, and rarely match yours.","The brain is very active and starting to look wrinkled."],items:[
+ {n:"Stack of records",e:"💿",b:"About 40 LPs, stacked flat."},
+ {n:"Guitar neck",e:"🎸",b:"Nut to twelfth fret. Half the scale length."},
+ {n:"Dutch oven",e:"🍲",b:"Six quart, enamel, worth every penny."},
+ {n:"Vinyl crate",e:"💿",b:"Holds about 60 records. Weighs more than the baby."},
+ {n:"Dutch oven",e:"🍲",b:"Full and lidded, both hands required."},
+ {n:"Baguette",e:"🥖",b:"Half of one. French law says it can only have four ingredients."},
+ {n:"Laptop",e:"💻",b:"Thirteen inches, corner to corner."}]},
+28:{len:[37.6,38.6],wt:[1000,1150],dev:["Third trimester. Baby can dream now — REM sleep has started.","Eyelashes are fully grown in.","Fat is filling in fast, which is most of the job from here."],items:[
+ {n:"Motorcycle helmet",e:"🪖",b:"Full face. Both of you will care about safety gear differently now."},
+ {n:"Acoustic guitar case",e:"🎸",b:"Well — a third of one."},
+ {n:"Chihuahua",e:"🐕",b:"The smallest dog breed and the loudest opinion."},
+ {n:"Bread machine",e:"🍞",b:"Used twice. Still on the counter."},
+ {n:"Lamp",e:"💡",b:"A small bedside one. Nightlight duty is coming."},
+ {n:"Cooler",e:"🧊",b:"The small one that fits behind a seat."},
+ {n:"Snare drum",e:"🥁",b:"Fourteen inches across. The wires underneath make the buzz."}]},
+29:{len:[38.6,39.9],wt:[1150,1300],dev:["Muscles and lungs are in full training mode. Kicks get sharper.","Bones are soaking up around 250 mg of calcium a day.","The head is growing to make room for a rapidly expanding brain."],items:[
+ {n:"Snare drum",e:"🥁",b:"Fourteen by five and a half. The classic backbeat."},
+ {n:"Bowling pin",e:"🎳",b:"Weighs about 3½ pounds and is designed to fall over dramatically."},
+ {n:"Fire extinguisher",e:"🧯",b:"The kitchen size. Which you should probably check."},
+ {n:"Bowling pin",e:"🎳",b:"Fifteen inches of engineered tipping."},
+ {n:"Firewood log",e:"🪵",b:"One split piece. Cabin-sized."},
+ {n:"Guitar body",e:"🎸",b:"A Strat body, waist to end. About that tall."},
+ {n:"Tackle box",e:"🎣",b:"Two trays and a tangle of line."}]},
+30:{len:[39.9,41.1],wt:[1300,1500],dev:["About a pint and a half of amniotic fluid — and it shrinks from here.","The soft lanugo hair starts falling off.","Baby can turn its head from side to side now."],items:[
+ {n:"Toaster oven",e:"🔥",b:"The countertop appliance that quietly replaced the real oven."},
+ {n:"Bike frame",e:"🚲",b:"A kid's 16-inch. Years away, but coming."},
+ {n:"Sledgehammer",e:"🔨",b:"Renovation season is always. Sorry."},
+ {n:"Laptop bag",e:"💼",b:"The one with the shoulder strap that always slips."},
+ {n:"Fishing rod reel seat",e:"🎣",b:"Butt to first guide."},
+ {n:"Golden retriever puppy",e:"🐕",b:"Eight weeks old, all paws and no coordination."},
+ {n:"Step stool",e:"🪜",b:"The little one they’ll drag to every counter in the house."}]},
+31:{len:[41.1,42.4],wt:[1500,1700],dev:["The brain is folding into ridges and grooves — real thinking hardware.","All five senses are working at once for the first time.","Weight gain is around half a pound a week from here on."],items:[
+ {n:"Skateboard deck",e:"🛹",b:"Half of one, nose to middle."},
+ {n:"Firewood round",e:"🪵",b:"Before splitting. Heavy in a way that surprises you."},
+ {n:"Cooler",e:"🧊",b:"The 25-quart. One weekend's worth."},
+ {n:"Swiss chard",e:"🥬",b:"The stems come in five colors. Nature showing off."},
+ {n:"Grocery bag",e:"🛍️",b:"The reusable kind, packed full and heavy."},
+ {n:"Car tire",e:"🛞",b:"A compact spare. Also known as the donut."},
+ {n:"Turntable",e:"🎚️",b:"Corner to corner. The lid never stays up either."}]},
+32:{len:[42.4,43.7],wt:[1700,1900],dev:["Most babies flip head-down around now, getting into position.","Fingernails have reached the ends of the fingers.","Practice breathing happens in regular bursts."],items:[
+ {n:"Big laptop",e:"💻",b:"Seventeen inch. Corner to corner."},
+ {n:"Electric guitar body",e:"🎸",b:"A Les Paul body with the neck off."},
+ {n:"Guitar gig bag",e:"🎸",b:"The front accessory pocket."},
+ {n:"Backpack",e:"🎒",b:"A small one. It'll be full of snacks in a few years."},
+ {n:"House cat",e:"🐈",b:"Curled up asleep, which is 16 hours a day."},
+ {n:"Boot",e:"🥾",b:"Knee high. The muddy-spring kind."},
+ {n:"Fire extinguisher",e:"🧯",b:"The proper garage-sized one."}]},
+33:{len:[43.7,45.0],wt:[1900,2100],dev:["Skull bones stay soft and unfused — they need to shift on the way out.","The immune system is taking on antibodies from you.","Baby can tell the difference between light and dark."],items:[
+ {n:"Table lamp",e:"💡",b:"Base to the top of the shade."},
+ {n:"Rolled sleeping bag",e:"🏕️",b:"Stuffed, not folded. Folding is a myth."},
+ {n:"Snow shovel blade",e:"❄️",b:"Michigan-sized. You know the one."},
+ {n:"Traffic cone",e:"🚧",b:"The 18-inch one. Michigan's state flower, basically."},
+ {n:"Duffel bag",e:"🎒",b:"Small. The hospital one, which should get packed soon."},
+ {n:"Bathroom sink",e:"🚰",b:"Corner to corner, roughly."},
+ {n:"Fire pit grate",e:"🔥",b:"The round one from the cabin."}]},
+34:{len:[45.0,46.2],wt:[2100,2380],dev:["Fingernails reach the fingertips. Scratch mittens exist for a reason.","The lungs are nearly finished developing.","Fat is filling in, so the wrinkly look is smoothing out."],items:[
+ {n:"Chess board",e:"♟️",b:"Tournament size. Sixty-four squares, endless arguments."},
+ {n:"Bowling ball bag",e:"🎳",b:"Zipped up with one ball inside."},
+ {n:"Bread box",e:"🍞",b:"The roll-top kind nobody actually uses."},
+ {n:"Beach towel",e:"🏖️",b:"Folded in quarters."},
+ {n:"Fishing rod",e:"🎣",b:"A short ice-fishing rod, tip to butt."},
+ {n:"Leek",e:"🥬",b:"The national emblem of Wales, worn into battle in 640 AD."},
+ {n:"Kitchen sink",e:"🚰",b:"The big basin, corner to corner."}]},
+35:{len:[46.2,47.4],wt:[2380,2600],dev:["Mostly gaining weight now — about half a pound a week.","The brain is roughly a third of its eventual size and growing fast.","Space is tight, so movements feel like rolls instead of kicks."],items:[
+ {n:"Watermelon",e:"🍉",b:"About 92% water. Baby is roughly 75%. Close enough."},
+ {n:"Bass drum",e:"🥁",b:"Eighteen inches across. You feel it more than hear it."},
+ {n:"Yoga block",e:"🧘",b:"Two of them, stacked."},
+ {n:"Camp stool",e:"🪑",b:"Folded flat and strapped shut."},
+ {n:"Bass drum head",e:"🥁",b:"An eighteen-inch head, edge to edge."},
+ {n:"Yard sign",e:"🪧",b:"The kind that appears on lawns every October."},
+ {n:"Recycling bin",e:"♻️",b:"The small one that lives under the sink."}]},
+36:{len:[47.4,48.6],wt:[2600,2860],dev:["Considered early term next week. Baby drops lower into the pelvis.","The digestive system is formed but won't be used until birth.","Meconium, the first diaper's contents, is building up now."],items:[
+ {n:"Baseball bat",e:"⚾",b:"A 32-inch. Little league regulation."},
+ {n:"Rolled bath mat",e:"🛁",b:"Rolled tight, standing on end."},
+ {n:"Violin",e:"🎻",b:"A quarter-size one, built for very small hands."},
+ {n:"Cat carrier",e:"🐈",b:"Which the cat will refuse to enter."},
+ {n:"Accordion",e:"🪗",b:"Closed up. Weighs about as much as the baby will."},
+ {n:"Junior golf club",e:"⛳",b:"A kid's first set. The short one."},
+ {n:"Rolling pin",e:"🥧",b:"The French kind, tapered at both ends, no handles."}]},
+37:{len:[48.6,49.8],wt:[2860,3080],dev:["Early term. Baby is practicing breathing and sucking a thumb.","The last of the vernix and lanugo is shedding off.","The head may settle into the pelvis, which is called dropping."],items:[
+ {n:"Toolbox",e:"🧰",b:"The 20-inch one, with the tray that never stays put."},
+ {n:"Snow saucer",e:"🛷",b:"Twenty inches across and zero steering."},
+ {n:"Kid's sled",e:"🛷",b:"The plastic one that survives exactly one winter."},
+ {n:"Mailbox",e:"📮",b:"The roadside kind, flag up, waiting on announcements."},
+ {n:"Rolling suitcase",e:"🧳",b:"Standing up with the handle down."},
+ {n:"Acoustic guitar body",e:"🎸",b:"Just the body, waist to end pin."},
+ {n:"Pillow",e:"🛏️",b:"Standard size, and you're currently using four of them."}]},
+38:{len:[49.8,50.7],wt:[3080,3290],dev:["The vernix coating is mostly gone and the skin is smoothing out.","Eye color at birth is often not the final color.","The grip is strong enough now to hold onto a finger."],items:[
+ {n:"Dreadnought guitar",e:"🎸",b:"Full size. And now there’s someone to play it to."},
+ {n:"Ukulele",e:"🎸",b:"A soprano uke, headstock to strap button. Four strings, no bad moods."},
+ {n:"Skateboard",e:"🛹",b:"A cruiser deck. Nose to tail."},
+ {n:"Duffel bag",e:"🎒",b:"The packed one, by the door, waiting."},
+ {n:"Border collie",e:"🐕",b:"Smart enough to herd you into the nursery."},
+ {n:"Suitcase",e:"🧳",b:"Carry-on size. Fits in the overhead, allegedly."},
+ {n:"Skateboard",e:"🛹",b:"A full deck, minus the nose."}]},
+39:{len:[50.7,51.2],wt:[3290,3460],dev:["Full term. The lungs are finished and baby is topping off with fat.","The chest sticks out a bit more now, which is completely normal.","The brain is still growing fast, and will be for years."],items:[
+ {n:"Beagle",e:"🐕",b:"Nose to tail, ears flapping."},
+ {n:"Kitchen trash can",e:"🗑️",b:"Thirteen gallon. You'll be emptying it much more often."},
+ {n:"Fishing net",e:"🎣",b:"Handle plus hoop, laid flat."},
+ {n:"Cornhole board",e:"🌽",b:"Half a board, top to hole."},
+ {n:"Yoga mat",e:"🧘",b:"Rolled up, standing on end."},
+ {n:"Cornhole board",e:"🌽",b:"A tabletop version, end to end."},
+ {n:"Yoga mat",e:"🧘",b:"Rolled, standing tall."}]},
+40:{len:[51.2,51.5],wt:[3460,3550],dev:["Due date week. Only about 5 in 100 babies actually arrive on it.","Most first babies show up a few days after the due date.","An average newborn is around 7½ pounds and 20 inches."],items:[
+ {n:"Car tire",e:"🛞",b:"A full-size one this time. Eighteen inch rim."},
+ {n:"Ukulele",e:"🎸",b:"A baritone. Tuned like the top four strings of a guitar."},
+ {n:"Tennis racket",e:"🎾",b:"The whole thing, handle included."},
+ {n:"Traffic cone",e:"🚧",b:"The tall 28-inch highway one."},
+ {n:"Fire hydrant",e:"🚒",b:"Almost. They're about 30 inches above ground."},
+ {n:"Baseball bat",e:"⚾",b:"A youth bat, 30 inch. The first one they'll swing."},
+ {n:"A whole entire person",e:"👶",b:"Any day now. That's the whole point of all this."}]}
+};
+
+
+/* Rotating trivia pools — the body / the baby */
+const BODY = [
+"Your blood volume goes up by nearly 50% during pregnancy.",
+"The uterus grows from about the size of a pear to the size of a watermelon.",
+"Pregnancy can make your feet permanently a half size larger.",
+"The heart pumps roughly 30% more blood per minute than usual.",
+"Cells from the baby cross into the parent's bloodstream and can stay for decades.",
+"Amniotic fluid is almost completely replaced every few hours.",
+"The sense of smell often sharpens — likely an old protective instinct.",
+"Babies can taste what you eat. Garlic genuinely comes through.",
+"The uterus can expand to about 500 times its normal size.",
+"Morning sickness happens at any hour. The name is just wrong.",
+"The placenta is an entire organ the body builds and then discards.",
+"Hair often stops falling out during pregnancy, then catches up afterward.",
+"Pregnancy is counted from your last period, so week 1 predates conception.",
+"Babies practice breathing in the womb using fluid, not air.",
+"A baby's heart beats roughly 54 million times before it's born.",
+"Braxton Hicks contractions are the uterus warming up. They start early.",
+"The dark line down the belly is called linea nigra and usually fades within a year.",
+"Babies can hear from about 18 weeks, and voices carry best of all.",
+"A newborn's stomach is about the size of a cherry on day one.",
+"Babies are born with around 300 bones. Adults have 206 — the rest fuse.",
+"Newborns can't produce tears for the first few weeks.",
+"Babies recognize a parent's voice at birth, having heard it for months.",
+"Newborns see best at 8 to 12 inches, which is roughly face distance.",
+"The soft spot on a newborn's skull can take 18 months to close.",
+"Babies are born with a grip strong enough to support their own weight.",
+"Newborns breathe about twice as fast as adults do.",
+"Kneecaps are cartilage at birth and take years to harden.",
+"Newborns sleep about 16 hours a day, just never 16 in a row.",
+"The umbilical cord is usually around 20 inches long.",
+"Roughly 1 in 250 pregnancies is naturally a twin pregnancy.",
+"Hiccups in the womb are so common they're considered a good sign.",
+"Meconium, the first diaper's contents, is nearly odorless. Enjoy it.",
+"Newborns have more taste buds than adults, including along the cheeks.",
+"A baby's brain roughly triples in size during the first year.",
+"Babies are born nearsighted, seeing mostly high-contrast shapes.",
+"The startle reflex is called the Moro reflex and fades by six months.",
+"Fingerprints form in the womb and never change after that.",
+"A newborn's head is about a quarter of its total body length.",
+"Babies smile in their sleep long before they smile at you.",
+"Human babies are born earlier in development than most mammals. Big heads.",
+"An average baby goes through roughly 2,700 diapers in the first year.",
+"Hearing is fully developed at birth. Sight takes months to catch up."
+];
+
+/* Rotating trivia pools — history, culture, and general oddity */
+const LORE = [
+"Ultrasound imaging was adapted from sonar built to hunt submarines.",
+"The at-home pregnancy test didn't reach store shelves until 1977.",
+"The 'Baby on Board' sign was invented in 1984 and sold 3 million in a year.",
+"The first infant incubators were shown off at world's fairs as a sideshow.",
+"Apgar scores were invented in 1952 by anesthesiologist Virginia Apgar.",
+"The stork myth comes from northern Europe, where storks nested on chimneys.",
+"The word 'infant' literally means 'unable to speak'.",
+"Disposable diapers hit stores in 1948 and took decades to catch on.",
+"The first published ultrasound image of a fetus appeared in 1958.",
+"Blue for boys and pink for girls was the reverse a century ago.",
+"The longest recorded pregnancy on the books lasted 375 days.",
+"Elephants are pregnant for 22 months. Perspective.",
+"Opossums gestate for 12 days, the shortest of any mammal.",
+"Seahorse fathers carry the pregnancy. Actual pregnancy, not a metaphor.",
+"August is the most common birth month in the US. February the least.",
+"Tuesday is statistically the most common day to be born.",
+"More babies arrive around 8 a.m. than any other hour, thanks to scheduling.",
+"Car seats weren't required by law in all 50 states until 1985.",
+"Nine months is an approximation. It's really closer to 9.2.",
+"Baby-talk pitch shifting shows up in every language anyone has studied.",
+"Newborns can pick out the smell of their own parent within days.",
+"The rocking speed that calms babies matches a walking parent's pace.",
+"White noise works because the womb is loud — roughly vacuum-cleaner loud.",
+"Skin-to-skin contact measurably regulates a newborn's body temperature.",
+"The soft spot lets the skull compress on the way out and pop back after.",
+"The word 'toddler' describes the walk, not the age.",
+"The Gerber baby was drawn in charcoal in 1928 and is still the logo.",
+"Cribs with drop-down sides were banned in the US in 2011.",
+"Peekaboo works because babies under 8 months don't grasp object permanence.",
+"Nearly every language has a word for mother built around an m sound.",
+"The first baby monitor was built for the Lindbergh family in 1937.",
+"The 'football hold' is named for exactly what it looks like.",
+"Onesies have shoulder snaps so you can pull them down, not over the head.",
+"An average newborn loses about 7% of its birth weight in the first week.",
+"Lullabies in wildly different cultures share a similar slow tempo.",
+"Sea otters hold hands while sleeping so they don't drift apart. Unrelated. Nice though.",
+"Babies were once wrongly believed not to feel pain. Corrected in the 1980s.",
+"Baby showers as we know them are mostly a post-WWII American invention.",
+"Nursery rhymes are often centuries old and much darker than they sound.",
+"The teddy bear is named for Teddy Roosevelt, who refused to shoot one.",
+"Swaddling shows up in art going back at least 4,000 years.",
+"Newborn footprints were first taken at hospitals in the 1960s for ID."
+];
+
+/* ============================================================
+   STORAGE (falls back to memory if localStorage is blocked)
+   ============================================================ */
+const mem = {};
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }
+             catch(e){ return k in mem ? mem[k] : d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ mem[k] = v; } }
+};
+const K = { due:'bumpticket.due', nick:'bumpticket.nick', done:'bumpticket.done' };
+
+/* ============================================================
+   DATES + MATH
+   ============================================================ */
+const DAY = 86400000;
+const midnight = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const todayMid = () => midnight(new Date());
+function parseDue(str){ const [y,m,d] = str.split('-').map(Number); return new Date(y, m-1, d); }
+function dayForDate(date, due){ return 280 - Math.round((midnight(due) - midnight(date)) / DAY); }
+function dateForDay(n, due){ return new Date(midnight(due).getTime() - (280 - n) * DAY); }
+const lerp = (a,b,t) => a + (b-a)*t;
+
+function info(day){
+  const wk = Math.floor(day/7), d = day % 7;
+  const W = WEEKS[wk]; if(!W) return null;
+  const t = d/7;
+  const cm = lerp(W.len[0], W.len[1], t);
+  const g  = lerp(W.wt[0],  W.wt[1],  t);
+  return { wk, d, cm, g, dev:W.dev[d % W.dev.length], item:W.items[d] };
+}
+function lenText(cm){
+  const inch = cm / 2.54;
+  // fractions of an inch are useless at poppy-seed scale
+  const primary = inch < 1 ? inch.toFixed(2) : inch.toFixed(1);
+  return `${primary} in <small>${cm.toFixed(1)} cm</small>`;
+}
+function wtText(g){
+  if(g < 1) return 'too small to weigh';
+  const oz = g / 28.35;
+  if(oz < 1)  return `${oz.toFixed(2)} oz <small>${Math.round(g)} g</small>`;
+  if(oz < 16) return `${oz.toFixed(1)} oz <small>${Math.round(g)} g</small>`;
+  const lb = Math.floor(oz / 16), rem = Math.round(oz - lb * 16);
+  return `${lb} lb ${rem} oz <small>${(g/1000).toFixed(2)} kg</small>`;
+}
+
+/* ============================================================
+   ELEMENTS
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const setup=$('setup'), main=$('main'), panel=$('panel'), cv=$('scratch');
+let due = store.get(K.due, null);
+let nick = store.get(K.nick, '');
+let done = store.get(K.done, []);
+let viewDay = null;
+let ctx, scratching = false, revealed = false, lastPt = null;
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function boot(){
+  if(!due){
+    setup.hidden = false;
+    const g = new Date(Date.now() + 200*DAY);
+    $('due').value = g.toISOString().slice(0,10);
+    return;
+  }
+  setup.hidden = true; main.hidden = false;
+  $('whoLine').textContent = nick ? `for ${nick}` : '';
+  const t = dayForDate(new Date(), parseDue(due));
+  viewDay = Math.min(Math.max(t, 28), 286);
+  render();
+}
+
+$('start').addEventListener('click', () => {
+  const v = $('due').value;
+  if(!v){ $('due').focus(); return; }
+  if(due && due !== v){ done = []; store.set(K.done, done); }  // day numbers shift
+  due = v; nick = $('nick').value.trim();
+  store.set(K.due, due); store.set(K.nick, nick);
+  setup.hidden = true; main.hidden = false;
+  $('cancel').hidden = true;
+  boot();
+});
+
+$('edit').addEventListener('click', () => {
+  main.hidden = true; setup.hidden = false;
+  $('due').value = due || ''; $('nick').value = nick || '';
+  $('start').textContent = 'Save';
+  $('cancel').hidden = false;
+  setup.querySelector('h2').textContent = 'Change the details.';
+  setup.querySelector('p').textContent = 'Changing the due date resets which tickets you\u2019ve scratched.';
+});
+
+$('cancel').addEventListener('click', () => {
+  setup.hidden = true; main.hidden = false;
+  $('cancel').hidden = true;
+});
+
+/* ============================================================
+   FIVE FACTS A DAY — one from the week, one measured, three rotating
+   ============================================================ */
+function measuredFact(day, data){
+  const left = 280 - day;
+  switch(day % 4){
+    case 0: {
+      const back = Math.max(day - 14, 28);
+      // day 140 is where the measurement switches to head-to-heel, so skip that window
+      const crosses = back < 140 && day >= 140;
+      const grown = crosses ? 0 : data.cm - info(back).cm;
+      if(grown > 0.05) return `Grown ${grown.toFixed(1)} cm in the last two weeks.`;
+      return `${Math.round(day / 280 * 100)}% of the way to the due date.`;
+    }
+    case 1:
+      if(left > 1) return `${left} days until the due date.`;
+      if(left === 1) return `One day until the due date.`;
+      if(left === 0) return `Today is the due date.`;
+      const over = Math.abs(left);
+      return `${over === 1 ? 'One day' : over + ' days'} past the due date. Any minute now.`;
+    case 2: {
+      const start = info(28);
+      return `About ${Math.round(data.cm / start.cm)} times longer than at four weeks.`;
+    }
+    default: {
+      const wksLeft = Math.max(Math.ceil(left / 7), 0);
+      if(wksLeft > 1) return `${wksLeft} weeks to go, give or take.`;
+      if(wksLeft === 1) return `About a week to go, give or take.`;
+      return `Past 40 weeks. The waiting is the whole activity now.`;
+    }
+  }
+}
+
+function factsFor(day, data){
+  const b1 = BODY[(day * 5) % BODY.length];
+  const b2 = BODY[(day * 5 + 17) % BODY.length];
+  const l1 = LORE[(day * 3) % LORE.length];
+  return [
+    ['🧠', data.dev],
+    ['📏', measuredFact(day, data)],
+    ['💫', b1],
+    ['🎲', l1],
+    ['🍼', b2]
+  ];
+}
+
+/* ============================================================
+   TIPS — three a day, matched to where you are
+   ============================================================ */
+const TIPS = {
+early:{ head:"Worth doing right now", list:[
+"Start prenatal vitamins with folic acid if you haven't already.",
+"Small frequent snacks beat big meals for nausea. Cold food often smells less.",
+"Book the first prenatal appointment for around week 8.",
+"Keep crackers by the bed and eat a few before you sit up.",
+"The exhaustion this early is real and normal. Sleep isn't laziness.",
+"Keep a running note of questions. You'll forget them at the appointment.",
+"Check what your insurance actually covers before the bills start arriving.",
+"Decide together who you're telling and when. There's no correct answer.",
+"Ask your doctor about a caffeine limit. Most land around 200 mg a day.",
+"Take a photo of the bump area now, while it's still the before shot.",
+"Look up your employer's leave policy early. The paperwork moves slowly.",
+"Hydration helps with almost every first-trimester complaint.",
+"Gentle walking usually helps energy and sleep more than resting does.",
+"Nausea bad enough that fluids won't stay down is worth a phone call.",
+"Pick a code word for 'I need to leave this social event now.'",
+"Tell your dentist you're pregnant before the next cleaning.",
+"Ask your provider once about the food rules, then stop reading forums about it.",
+"Track symptoms in your phone notes. The patterns are useful at appointments.",
+"If a smell wrecks you, a dab of lemon or mint under the nose helps.",
+"Sea-bands and vitamin B6 are worth trying before anything stronger.",
+"A protein snack right before bed can steady the next morning.",
+"Ask quietly now whether work has a private room you could use later.",
+"Start a shared note for names. Both of you keep veto power.",
+"Get the flu and Tdap shot timing straight with your provider.",
+"Constipation is nearly universal. Fiber and water beat the alternatives.",
+"Back up the first ultrasound image somewhere that isn't the fridge.",
+"Anxiety between appointments is normal. Say it out loud to someone.",
+"Check whether your plan covers a lactation consultant. Ask early.",
+"Don't sand or strip old paint in a house built before 1978.",
+"Cool rooms and cool showers help when you suddenly start running hot."
+]},
+mid:{ head:"Worth doing this trimester", list:[
+"This is the easiest stretch for travel. If you want a trip, take it now.",
+"Start sleeping on your side. A pillow between the knees helps a lot.",
+"Sign up for a birth class — the good ones fill up months ahead.",
+"Talk out loud to the bump. Hearing kicks in around 18 weeks.",
+"Start the registry now, then edit it. You'll change your mind about half.",
+"Take the bump photo the same day each week, same spot, same light.",
+"The anatomy scan is around week 20. Bring written questions.",
+"Buy fewer newborn-size clothes than you think. They outgrow them in weeks.",
+"Research car seats now. Installing one is harder than it looks.",
+"Pelvic floor exercises now genuinely pay off later.",
+"Ask when the glucose test is scheduled so you can plan around it.",
+"If you're painting the nursery, do it while reaching is still easy.",
+"Heartburn responds better to several small meals than to fewer big ones.",
+"Pick a pediatrician before the third trimester. Some have waitlists.",
+"Learn the normal pattern of kicks. Knowing it helps you notice changes.",
+"Order anything custom now. Furniture lead times are brutal.",
+"Try a maternity support band before you're desperate for one.",
+"Round ligament pain is sharp and normal. Stand up slowly.",
+"Take an infant CPR class. Most hospitals run them free.",
+"Decide who's allowed at the hospital before anyone assumes they are.",
+"Get shoes with real support. Feet swell and arches drop.",
+"Ask about cord blood banking now if you want it. It needs early signup.",
+"Photograph the nursery outlets before the crib blocks them forever.",
+"Say the name shortlist out loud. Some names don't survive that.",
+"Book maternity photos now if you want them. Good photographers fill up.",
+"Read one birth story that went sideways. Preparation beats surprise.",
+"Swap one coffee for a walk. Second-trimester energy responds to movement.",
+"Check that your car actually fits the stroller you're eyeing.",
+"Write the work handoff doc early, then update it monthly.",
+"Start the bedtime routine now so the habit already exists."
+]},
+late:{ head:"Worth doing before the day", list:[
+"Pack the hospital bag by week 36. Include a phone charger with a long cord.",
+"Install the car seat and get it inspected. Many fire stations do it free.",
+"Freeze meals now. Future you will be extremely grateful.",
+"Write down what you want to ask at delivery. You won't remember in the moment.",
+"Count kicks daily. Ten movements in two hours is a common benchmark.",
+"Set up the diaper station at waist height before you need it at 3 a.m.",
+"Talk through what you want at the birth, and what you'd accept if plans change.",
+"Wash the newborn clothes and crib sheets before first use.",
+"Line up who's feeding the pets and checking the house while you're gone.",
+"Ask the hospital what they actually provide so you don't over-pack.",
+"Drive the route to the hospital once, at the hour you'd realistically go.",
+"Bank sleep now. It's more useful before than it will be available after.",
+"Make a plan for visitors in the first two weeks, including how to say no.",
+"Put the pediatrician's after-hours number in your phone today.",
+"Charge everything the night labor starts. Everything.",
+"Pre-fill the hospital paperwork and put it in the bag.",
+"Keep the gas tank above half from week 36 on.",
+"Learn which signs mean call now instead of waiting until morning.",
+"Bring cash and quarters for parking. Hospitals are stuck in 1995.",
+"Pack a going-home outfit one size bigger than you think you need.",
+"Put a towel and a trash bag in the car. Just in case.",
+"Decide who calls whom and in what order, so nobody's offended.",
+"Set up the photo-sharing album before the first photo exists.",
+"Stock the freezer with things you can eat one-handed.",
+"Buy more size 1 diapers than newborn. Newborn goes fast.",
+"Practice the car seat straps with a rolled towel to learn the fit.",
+"Note the pediatrician's first-visit window. It's usually within days.",
+"Ask how discharge works so the last few hours don't surprise you.",
+"Put a nightlight in the hallway between your room and the nursery.",
+"Say out loud, specifically, what help you want from visitors."
+]}
+};
+
+function tipsFor(day){
+  const wk = Math.floor(day / 7);
+  const set = wk < 14 ? TIPS.early : wk < 28 ? TIPS.mid : TIPS.late;
+  const n = set.list.length;                       // 30 per stage
+  const picks = [0, 4, 9, 14, 19, 24].map(off => set.list[(day * 7 + off) % n]);
+  return { head: set.head, list: [...new Set(picks)] };
+}
+
+/* ============================================================
+   RENDER A DAY
+   ============================================================ */
+function render(){
+  const today = dayForDate(new Date(), parseDue(due));
+
+  // before 4 weeks there's nothing to show yet
+  if(today < 28){
+    $('dayNum').innerHTML = `Day <b>${Math.max(today, 0)}</b> of 280`;
+    $('weekTag').textContent = `Week ${Math.max(Math.floor(today/7), 0)}`;
+    panel.innerHTML = `<div class="locked"><div class="glyph">🌱</div>
+      <p>Tickets start at 4 weeks.<br>${28 - today} ${28 - today === 1 ? 'day' : 'days'} until the first one.</p></div>`;
+    $('reveal').classList.remove('show');
+    $('prev').disabled = true; $('next').disabled = true;
+    $('dayFlag').className = 'flag past';
+    $('dayFlag').textContent = 'No tickets yet';
+    return;
+  }
+
+  if(viewDay > today) viewDay = today;      // never look ahead
+  viewDay = Math.min(viewDay, 286);         // 40 weeks is the last ticket
+  const data = info(viewDay);
+
+  $('dayNum').innerHTML = viewDay <= 280
+    ? `Day <b>${viewDay}</b> of 280`
+    : `<b>${viewDay - 280}</b> ${viewDay - 280 === 1 ? 'day' : 'days'} past due`;
+  $('weekTag').textContent = `Week ${Math.floor(viewDay/7)} + ${viewDay%7}`;
+
+  const dt = dateForDay(viewDay, parseDue(due));
+  const opts = {weekday:'long', month:'short', day:'numeric'};
+  const flag = $('dayFlag');
+  const back = today - viewDay;
+  if(back <= 0){
+    flag.className = 'flag now';
+    flag.innerHTML = `Today <span class="sub">${dt.toLocaleDateString(undefined, opts)}</span>`;
+  }else{
+    flag.className = 'flag past';
+    flag.innerHTML = `${dt.toLocaleDateString(undefined, opts)} <span class="sub">${back === 1 ? 'yesterday' : back + ' days ago'}</span>`;
+  }
+
+  const tk = $('ticket');
+  requestAnimationFrame(() => {
+    const off = panel.offsetTop + panel.offsetHeight + 6;
+    tk.style.setProperty('--notch', off + 'px');
+  });
+
+  const last = Math.min(today, 286);
+  $('prev').disabled = viewDay <= 28;
+  $('next').disabled = viewDay >= last;
+
+  // too early / past 40 weeks
+  if(!data){
+    panel.innerHTML = `<div class="locked"><div class="glyph">🌱</div>
+      <p>${viewDay < 28 ? 'Too early for a ticket — these start at 4 weeks.' :
+        'Past 40 weeks. No more tickets, just a lot of waiting by the phone.'}</p></div>`;
+    $('reveal').classList.remove('show');
+    return;
+  }
+
+  // rebuild panel
+  panel.innerHTML = `
+    <div class="prize">
+      <div class="glyph">${data.item.e}</div>
+      <div class="kicker">About the size of</div>
+      <div class="name">${data.item.n}</div>
+      <div class="blurb">${data.item.b}</div>
+    </div>`;
+
+  $('lenV').innerHTML = lenText(data.cm);
+  $('wtV').innerHTML  = wtText(data.g);
+  $('facts').innerHTML = factsFor(viewDay, data)
+    .map(f => `<li><span class="m">${f[0]}</span><span>${f[1]}</span></li>`).join('');
+
+  const tips = tipsFor(viewDay);
+  $('tipHead').textContent = tips.head;
+  $('tipList').innerHTML = tips.list.map(t => `<li>${t}</li>`).join('');
+
+  revealed = done.includes(viewDay);
+  if(revealed){ $('reveal').classList.add('show'); return; }
+
+  $('reveal').classList.remove('show');
+  const c = document.createElement('canvas');
+  c.className = 'scratch'; c.id = 'scratch';
+  panel.appendChild(c);
+  const hint = document.createElement('div');
+  hint.className = 'hint'; hint.textContent = 'Scratch it off';
+  panel.appendChild(hint);
+  initScratch(c);
+}
+
+/* ============================================================
+   SCRATCH LAYER
+   ============================================================ */
+function initScratch(c){
+  const r = panel.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  c.width = r.width * dpr; c.height = r.height * dpr;
+  ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // gold foil
+  const g = ctx.createLinearGradient(0, 0, r.width, r.height);
+  g.addColorStop(0,'#F2C877'); g.addColorStop(.35,'#D9A34B');
+  g.addColorStop(.5,'#F7DDA6'); g.addColorStop(.7,'#C7913A'); g.addColorStop(1,'#E8B657');
+  ctx.fillStyle = g; ctx.fillRect(0,0,r.width,r.height);
+
+  // sheen stripes
+  ctx.globalAlpha = .12; ctx.strokeStyle = '#fff'; ctx.lineWidth = 14;
+  for(let x = -r.height; x < r.width + r.height; x += 46){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + r.height, r.height); ctx.stroke();
+  }
+  // speckle
+  ctx.globalAlpha = .10; ctx.fillStyle = '#7a5518';
+  for(let i = 0; i < 420; i++){
+    ctx.fillRect(Math.random()*r.width, Math.random()*r.height, 2, 2);
+  }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'rgba(60,38,10,.55)';
+  ctx.font = '600 15px Fredoka, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(nick ? `${nick}'s ticket` : 'Today\u2019s ticket', r.width/2, 34);
+
+  const pos = e => {
+    const b = c.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return { x: p.clientX - b.left, y: p.clientY - b.top };
+  };
+  const scrub = p => {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineWidth = 34; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    if(lastPt){ ctx.moveTo(lastPt.x, lastPt.y); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+    ctx.arc(p.x, p.y, 17, 0, Math.PI*2); ctx.fill();
+    lastPt = p;
+    ctx.globalCompositeOperation = 'source-over';
+  };
+  const down = e => {
+    e.preventDefault(); scratching = true; lastPt = null;
+    try{ c.setPointerCapture(e.pointerId); }catch(err){}
+    scrub(pos(e));
+  };
+  let ticks = 0;
+  const move = e => {
+    if(!scratching) return;
+    e.preventDefault(); scrub(pos(e));
+    if(++ticks % 10 === 0 && c.isConnected) checkDone(c);   // pop while they're still scratching
+  };
+  const up   = () => { if(!scratching) return; scratching = false; lastPt = null; if(c.isConnected) checkDone(c); };
+
+  c.addEventListener('pointerdown', down);
+  c.addEventListener('pointermove', move);
+  c.addEventListener('pointerup', up);
+  c.addEventListener('pointercancel', up);
+
+  // keyboard / accessibility escape hatch
+  c.setAttribute('tabindex','0');
+  c.setAttribute('role','button');
+  c.setAttribute('aria-label','Scratch off to reveal today\u2019s size. Press Enter to reveal.');
+  c.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); finish(c); }
+  });
+}
+
+function checkDone(c){
+  const img = ctx.getImageData(0, 0, c.width, c.height).data;
+  let clear = 0, total = 0;
+  for(let i = 3; i < img.length; i += 4 * 24){ total++; if(img[i] < 40) clear++; }
+  if(clear / total > 0.42) finish(c);
+}
+
+function finish(c){
+  if(revealed) return;
+  revealed = true;
+  c.classList.add('gone');
+  const hint = panel.querySelector('.hint'); if(hint) hint.remove();
+  setTimeout(() => c.remove(), 550);
+  $('reveal').classList.add('show');
+  if(!done.includes(viewDay)){ done.push(viewDay); store.set(K.done, done); }
+  burst();
+}
+
+/* ============================================================
+   NAV + SHARE
+   ============================================================ */
+$('prev').addEventListener('click', () => {
+  if(viewDay > 28){ viewDay--; render(); }
+});
+$('next').addEventListener('click', () => {
+  const t = Math.min(dayForDate(new Date(), parseDue(due)), 286);
+  if(viewDay < t){ viewDay++; render(); }
+});
+
+// Home: re-read the clock and jump to the current day. Handles the case where
+// the app has been sitting open on the phone since yesterday.
+function goToToday(){
+  const t = dayForDate(new Date(), parseDue(due));
+  viewDay = Math.min(Math.max(t, 28), 286);
+  if(!setup.hidden){ setup.hidden = true; main.hidden = false; $('cancel').hidden = true; }
+  render();
+}
+$('home').addEventListener('click', goToToday);
+
+// coming back to the tab after midnight should also land on the right day
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && !main.hidden && due) goToToday();
+});
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function burst(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cc = $('confetti'); cc.hidden = false;
+  const x = cc.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cc.width = innerWidth * dpr; cc.height = innerHeight * dpr; x.scale(dpr, dpr);
+  const colors = ['#E8B657','#7FD8BE','#FF7A6B','#FFF6E9','#C084FC'];
+  const rect = panel.getBoundingClientRect();
+  const ox = rect.left + rect.width/2, oy = rect.top + rect.height/2;
+  const bits = Array.from({length: 90}, () => ({
+    x: ox, y: oy,
+    vx: (Math.random()-.5)*13, vy: (Math.random()-.9)*13,
+    s: 4 + Math.random()*6, r: Math.random()*Math.PI,
+    vr: (Math.random()-.5)*.3, c: colors[(Math.random()*colors.length)|0], life: 0
+  }));
+  let raf;
+  (function tick(){
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = false;
+    for(const b of bits){
+      b.life++; b.vy += .32; b.x += b.vx; b.y += b.vy; b.r += b.vr; b.vx *= .99;
+      if(b.y < innerHeight + 40){ alive = true; }
+      x.save(); x.translate(b.x, b.y); x.rotate(b.r);
+      x.globalAlpha = Math.max(0, 1 - b.life/110);
+      x.fillStyle = b.c; x.fillRect(-b.s/2, -b.s/2, b.s, b.s*.6); x.restore();
+    }
+    if(alive) raf = requestAnimationFrame(tick);
+    else { cancelAnimationFrame(raf); cc.hidden = true; }
+  })();
+}
+
+// iOS fires resize when the toolbar hides on scroll, which would wipe a
+// half-scratched ticket. Only re-render when the width genuinely changes.
+let lastW = window.innerWidth;
+window.addEventListener('resize', () => {
+  if(window.innerWidth === lastW) return;
+  lastW = window.innerWidth;
+  clearTimeout(window._rz);
+  window._rz = setTimeout(() => { if(!main.hidden) render(); }, 220);
+});
+
+boot();
+</script>
+<div id="lu-stamp" style="font:500 11px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.02em;text-align:center;opacity:.55;padding:20px 16px 12px">Last updated Nov 6, 2026, 11:54 PM EST</div>
+</body>
+</html>
