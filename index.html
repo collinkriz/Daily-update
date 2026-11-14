@@ -145,6 +145,14 @@
   .locked .glyph{font-size:52px}
   .locked p{color:var(--cream-dim);font-size:15px;margin:8px 0 0}
 
+  /* length / weight toggle */
+  .toggle{display:flex;gap:4px;margin-top:12px;padding:4px;border-radius:12px;background:rgba(0,0,0,.25)}
+  .toggle button{flex:1;font-family:"Fredoka";font-weight:600;font-size:14.5px;border:0;border-radius:9px;
+    padding:8px 10px;background:transparent;color:var(--cream-dim);cursor:pointer;transition:background .2s,color .2s}
+  .toggle button.on{background:var(--gold);color:#2A1A4D}
+  .prize.flip{animation:flip .35s ease both}
+  @keyframes flip{from{opacity:0;transform:rotateY(70deg) scale(.96)}to{opacity:1;transform:none}}
+
   /* stats */
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
   .stat{background:rgba(0,0,0,.22);border-radius:12px;padding:10px 12px}
@@ -233,6 +241,10 @@
       </div>
 
       <div id="reveal" class="hidden-until">
+        <div class="toggle" id="toggle" role="tablist">
+          <button id="tLen" class="on" role="tab">📏 Length</button>
+          <button id="tWt" role="tab">⚖️ Weight</button>
+        </div>
         <div class="stats">
           <div class="stat"><div class="k">Length</div><div class="v" id="lenV">—</div></div>
           <div class="stat"><div class="k">Weight</div><div class="v" id="wtV">—</div></div>
@@ -611,7 +623,27 @@ const BODY = [
 "Babies smile in their sleep long before they smile at you.",
 "Human babies are born earlier in development than most mammals. Big heads.",
 "An average baby goes through roughly 2,700 diapers in the first year.",
-"Hearing is fully developed at birth. Sight takes months to catch up."
+"Hearing is fully developed at birth. Sight takes months to catch up.",
+"Relaxin, a pregnancy hormone, loosens ligaments all over the body — not just the hips.",
+"Stuffy nose all the time? Extra blood flow causes it. It's called pregnancy rhinitis.",
+"Babies settle into sleep-wake cycles in the womb, often getting busy right when you lie down.",
+"Vernix, a waxy coating, protects the baby's skin from months of floating in fluid.",
+"Lanugo, a fine downy hair, covers the baby in the womb and mostly sheds before birth.",
+"Eyes open in the womb at around 26 to 28 weeks.",
+"Newborns have a stepping reflex and will 'walk' if held upright with feet on a surface.",
+"Eye color can keep shifting through the whole first year.",
+"Stroke a newborn's cheek and they turn toward it. That's the rooting reflex.",
+"A newborn's heart beats about 120 to 160 times a minute.",
+"Thumb-sucking starts in the womb and sometimes shows up on ultrasounds.",
+"Newborns strongly prefer breathing through their nose for the first few months.",
+"The placenta weighs about a pound by delivery day.",
+"Your center of gravity shifts forward, which is why the pregnancy waddle is real.",
+"A newborn's body is about 75% water.",
+"Newborns can't shiver well, so they burn special brown fat to stay warm.",
+"Stroke a baby's sole and the toes fan out. That's the Babinski reflex.",
+"Babies swallow amniotic fluid every day, which gives the gut some practice.",
+"Babies get their first sense of taste from flavors that pass into the amniotic fluid.",
+"Your rib cage can widen during pregnancy to make room. It doesn't always go all the way back."
 ];
 
 /* Rotating trivia pools — history, culture, and general oddity */
@@ -657,8 +689,132 @@ const LORE = [
 "Nursery rhymes are often centuries old and much darker than they sound.",
 "The teddy bear is named for Teddy Roosevelt, who refused to shoot one.",
 "Swaddling shows up in art going back at least 4,000 years.",
-"Newborn footprints were first taken at hospitals in the 1960s for ID."
+"Newborn footprints were first taken at hospitals in the 1960s for ID.",
+"Ancient Egyptians tested for pregnancy by watering wheat and barley seeds with urine.",
+"In the 1930s, the 'rabbit test' meant injecting urine into an actual rabbit.",
+"A newborn kangaroo is about the size of a jellybean.",
+"Giraffe calves drop about six feet at birth and are standing within an hour.",
+"Panda cubs are born at roughly 1/900th of their mother's weight.",
+"The first baby carriage, built in 1733, was meant to be pulled by a goat.",
+"Isaac Newton was born so small he reportedly fit in a quart pot.",
+"Finland gives new parents a free baby box that doubles as a first crib.",
+"Emperor penguin dads balance the egg on their feet for about two months.",
+"Rattles are among the oldest known toys. Clay ones go back thousands of years.",
+"'Rock-a-bye Baby' first appeared in print around 1765.",
+"Nine-banded armadillos almost always give birth to identical quadruplets.",
+"Flamingo chicks are born gray. The pink comes later, from their diet.",
+"The 'Twinkle Twinkle' tune is an old French folk song. Mozart just wrote variations on it.",
+"Shakespeare's 'seven ages of man' starts with the infant, 'mewling and puking.'",
+"In 1900, most American babies were born at home, not in hospitals.",
+"C-sections are named after Julius Caesar by legend, but he almost certainly wasn't born that way.",
+"A blue whale calf gains around 200 pounds a day while nursing.",
+"Baby elephants suck their trunks for comfort, much like a thumb.",
+"Orca and dolphin newborns can swim from the moment they're born."
 ];
+
+
+/* Weight comparisons, grams. Days pick something within ~12% of the baby's weight,
+   sometimes as a small multiple ("3 golf balls"). */
+const WEIGHTS = [
+{n:"paperclip",pl:"paperclips",e:"📎",w:1,b:"Standard size. The jumbo ones are cheating."},
+{n:"dollar bill",pl:"dollar bills",e:"💵",w:1,b:"Every US bill weighs about a gram, whatever number is on it."},
+{n:"penny",pl:"pennies",e:"🪙",w:2.5,b:"Mostly zinc since 1982. Only the outside is copper."},
+{n:"ping pong ball",pl:"ping pong balls",e:"🏓",w:2.7,b:"Regulation weight is exactly 2.7 grams."},
+{n:"hummingbird",pl:"hummingbirds",e:"🐦",w:3,b:"A ruby-throated one. Its heart can top 1,000 beats a minute."},
+{n:"sugar packet",pl:"sugar packets",e:"🍬",w:4,b:"The little paper kind at every diner."},
+{n:"nickel",pl:"nickels",e:"🪙",w:5,b:"Exactly 5 grams. The Mint keeps it tidy."},
+{n:"grape",pl:"grapes",e:"🍇",w:5,b:"One grape. Peeling it is optional."},
+{n:"quarter",pl:"quarters",e:"🪙",w:5.7,b:"Laundry money, parking money, gumball money."},
+{n:"wooden pencil",pl:"wooden pencils",e:"✏️",w:7,b:"A classic yellow No. 2, eraser included."},
+{n:"large marshmallow",pl:"large marshmallows",e:"☁️",w:7,b:"The campfire size, not the cocoa minis."},
+{n:"AAA battery",pl:"AAA batteries",e:"🔋",w:11.5,b:"The one the remote always needs at the worst time."},
+{n:"strawberry",pl:"strawberries",e:"🍓",w:12,b:"A medium one, green top and all."},
+{n:"chicken nugget",pl:"chicken nuggets",e:"🍗",w:16,b:"Officially comes in four shapes: bell, boot, ball, and bone."},
+{n:"AA battery",pl:"AA batteries",e:"🔋",w:23,b:"About twice a AAA. Batteries are not subtle."},
+{n:"slice of bread",pl:"slices of bread",e:"🍞",w:28,b:"Regular sandwich bread. Not the heel. Nobody wants the heel."},
+{n:"golf ball",pl:"golf balls",e:"⛳",w:46,b:"The rules cap it at 45.93 grams. Lighter is allowed."},
+{n:"large egg",pl:"large eggs",e:"🥚",w:57,b:"Shell on. Two ounces exactly, by USDA grading."},
+{n:"tennis ball",pl:"tennis balls",e:"🎾",w:58,b:"The fuzz is called nap. It's there to slow the ball down."},
+{n:"lime",pl:"limes",e:"🍋‍🟩",w:65,b:"Small, green, and doing most of the work in guacamole."},
+{n:"kiwi",pl:"kiwis",e:"🥝",w:75,b:"Named after the bird, which is also small, brown, and fuzzy."},
+{n:"deck of cards",pl:"decks of cards",e:"🃏",w:95,b:"52 cards plus the jokers nobody takes out."},
+{n:"lemon",pl:"lemons",e:"🍋",w:100,b:"When life gives you one, it gives you about 100 grams."},
+{n:"computer mouse",pl:"computer mice",e:"🖱️",w:100,b:"Wireless, batteries in. Click."},
+{n:"stick of butter",pl:"sticks of butter",e:"🧈",w:113,b:"A quarter pound. Half a cup. Eight tablespoons. Unit chaos."},
+{n:"hamster",pl:"hamsters",e:"🐹",w:120,b:"Its cheek pouches stretch all the way back to its shoulders."},
+{n:"baseball",pl:"baseballs",e:"⚾",w:145,b:"108 double stitches, all sewn by hand."},
+{n:"banana",pl:"bananas",e:"🍌",w:150,b:"A medium one, peel on. The internet's favorite unit of scale."},
+{n:"hockey puck",pl:"hockey pucks",e:"🏒",w:165,b:"Frozen before games so it bounces less."},
+{n:"apple",pl:"apples",e:"🍎",w:180,b:"A medium one. Doctor still kept away."},
+{n:"smartphone",pl:"smartphones",e:"📱",w:190,b:"Roughly what's in your hand right now, minus the case."},
+{n:"avocado",pl:"avocados",e:"🥑",w:200,b:"A Hass, perfectly ripe for about eleven minutes."},
+{n:"mango",pl:"mangoes",e:"🥭",w:300,b:"Related to cashews and pistachios. Fruit family trees are weird."},
+{n:"can of soda",pl:"cans of soda",e:"🥤",w:370,b:"Full and unopened. Twelve ounces of fizz plus the can."},
+{n:"football",pl:"footballs",e:"🏈",w:410,b:"NFL regulation is 14 to 15 ounces, inflated."},
+{n:"soccer ball",pl:"soccer balls",e:"⚽",w:430,b:"A size 5, the one the pros use."},
+{n:"box of spaghetti",pl:"boxes of spaghetti",e:"🍝",w:454,b:"One pound. Feeds four, or two on a long day."},
+{n:"basketball",pl:"basketballs",e:"🏀",w:620,b:"A regulation NBA ball, about 22 ounces."},
+{n:"coconut",pl:"coconuts",e:"🥥",w:680,b:"A husked brown one. Mostly water and attitude."},
+{n:"rotisserie chicken",pl:"rotisserie chickens",e:"🍗",w:900,b:"The grocery store kind. Best deal in the building."},
+{n:"guinea pig",pl:"guinea pigs",e:"🐹",w:900,b:"Neither a pig nor from Guinea. Excellent squeaker."},
+{n:"2-lb bag of sugar",pl:"2-lb bags of sugar",e:"🍬",w:907,b:"Exactly what it says on the bag."},
+{n:"liter of water",pl:"liters of water",e:"💧",w:1000,b:"The kilogram was originally defined as exactly this."},
+{n:"laptop",pl:"laptops",e:"💻",w:1250,b:"A thin 13-inch one, charger left at the office."},
+{n:"cantaloupe",pl:"cantaloupes",e:"🍈",w:1400,b:"A medium one, knock-tested in the produce aisle."},
+{n:"bowling pin",pl:"bowling pins",e:"🎳",w:1550,b:"Regulation pins are maple, about 3½ pounds."},
+{n:"rabbit",pl:"rabbits",e:"🐰",w:1700,b:"A Holland Lop. Floppy ears, firm opinions."},
+{n:"half gallon of milk",pl:"half gallons of milk",e:"🥛",w:2000,b:"Just over four pounds, jug included."},
+{n:"chihuahua",pl:"chihuahuas",e:"🐕",w:2200,b:"Smallest dog breed, loudest opinions."},
+{n:"acoustic guitar",pl:"acoustic guitars",e:"🎸",w:2200,b:"A dreadnought, strings on. About five pounds."},
+{n:"5-lb bag of flour",pl:"5-lb bags of flour",e:"🌾",w:2270,b:"The big one at the bottom of the baking aisle."},
+{n:"10-inch cast iron skillet",pl:"10-inch cast iron skillets",e:"🍳",w:2300,b:"About five pounds. Pre-seasoned, never soaked."},
+{n:"brick",pl:"bricks",e:"🧱",w:2300,b:"A standard red clay one. Do not juggle."},
+{n:"mini watermelon",pl:"mini watermelons",e:"🍉",w:2700,b:"The 'personal' size. Still not personal-size."},
+{n:"electric guitar",pl:"electric guitars",e:"🎸",w:3600,b:"A Strat, about eight pounds. A Les Paul runs heavier."},
+{n:"12-inch cast iron skillet",pl:"12-inch cast iron skillets",e:"🍳",w:3600,b:"Eight pounds of heirloom."},
+{n:"8-lb bowling ball",pl:"8-lb bowling balls",e:"🎳",w:3630,b:"A kid's ball. Light enough to roll, heavy enough to drop on a toe."},
+{n:"gallon of milk",pl:"gallons of milk",e:"🥛",w:3900,b:"About 8.6 pounds. The heaviest thing in most grocery carts."}
+];
+const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+function weightCands(g){
+  const out = [];
+  for(const it of WEIGHTS){
+    const maxN = it.w < 200 ? 8 : 3;
+    for(let n = 1; n <= maxN; n++){
+      const err = Math.abs(n * it.w - g) / g;
+      if(err <= 0.12) out.push({it, n, err});
+    }
+  }
+  if(out.length < 2){   // thin spot: widen to anything within ~35%
+    for(const it of WEIGHTS){ const err = Math.abs(it.w - g) / g;
+      if(err <= 0.35 && !out.some(o => o.it === it && o.n === 1)) out.push({it, n:1, err}); }
+  }
+  if(!out.length){   // fallback: nearest single item
+    const best = WEIGHTS.reduce((a, b) => Math.abs(Math.log(b.w / g)) < Math.abs(Math.log(a.w / g)) ? b : a);
+    out.push({it:best, n:1, err:0});
+  }
+  out.sort((a, b) => a.n - b.n || a.err - b.err);
+  return out.slice(0, 6);
+}
+const weightMemo = {};
+function weightPick(day, g){
+  if(weightMemo[day]) return weightMemo[day];
+  const c = weightCands(g);
+  let k = day % c.length;
+  // don't show the same thing two days running
+  const prev = info(day - 1);
+  if(c.length > 1 && prev && prev.g >= 1 && weightPick(day - 1, prev.g).it === c[k].it) k = (k + 1) % c.length;
+  return (weightMemo[day] = c[k]);
+}
+function weightItem(day, g){
+  if(g < 1){
+    const tiny = WEIGHTS.slice(0, 4), it = tiny[day % tiny.length];
+    return { e:it.e, kicker:'Lighter than a', n:cap(it.n), b:it.b };
+  }
+  const {it, n} = weightPick(day, g);
+  return { e: n > 1 ? it.e.repeat(Math.min(n, 3)) : it.e, kicker:'About the weight of',
+           n: n > 1 ? `${n} ${it.pl}` : cap(it.n), b:it.b };
+}
 
 /* ============================================================
    STORAGE (falls back to memory if localStorage is blocked)
@@ -759,7 +915,7 @@ $('cancel').addEventListener('click', () => {
 });
 
 /* ============================================================
-   FIVE FACTS A DAY — one from the week, one measured, three rotating
+   THREE FACTS A DAY — one about this week, two from shuffled pools
    ============================================================ */
 function measuredFact(day, data){
   const left = 280 - day;
@@ -791,17 +947,41 @@ function measuredFact(day, data){
   }
 }
 
+// Seeded shuffle so each pool runs all the way through before anything repeats,
+// and each lap through a pool comes in a different order.
+function rng(seed){
+  return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const shuffleCache = {};
+function shuffled(pool, key, lap){
+  const id = key + ':' + lap;
+  if(shuffleCache[id]) return shuffleCache[id];
+  let seed = lap * 7919;
+  for(const ch of String(due || '') + key) seed = Math.imul(seed ^ ch.charCodeAt(0), 16777619);
+  const r = rng(seed), out = pool.slice();
+  for(let i = out.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+  // keep the start of a new lap clear of the end of the last one
+  if(lap > 0){
+    const tail = new Set(shuffled(pool, key, lap - 1).slice(-25));
+    for(let i = 0; i < 25; i++) if(tail.has(out[i])){
+      const swap = out.findIndex((x, k) => k >= 30 && !tail.has(x));
+      if(swap > -1) [out[i], out[swap]] = [out[swap], out[i]];
+    }
+  }
+  return (shuffleCache[id] = out);
+}
+function pick(pool, key, i){
+  return shuffled(pool, key, Math.floor(i / pool.length))[i % pool.length];
+}
+
 function factsFor(day, data){
-  const b1 = BODY[(day * 5) % BODY.length];
-  const b2 = BODY[(day * 5 + 17) % BODY.length];
-  const l1 = LORE[(day * 3) % LORE.length];
-  return [
-    ['🧠', data.dev],
-    ['📏', measuredFact(day, data)],
-    ['💫', b1],
-    ['🎲', l1],
-    ['🍼', b2]
-  ];
+  const d = day % 7, i = day - 28;
+  // first fact: this week's development on three days, a measured stat on the other four
+  const first = (d % 2 === 0 && d < 6) ? ['🧠', WEEKS[data.wk].dev[d / 2]] : ['📏', measuredFact(day, data)];
+  return [ first, ['💫', pick(BODY, 'body', i)], ['🎲', pick(LORE, 'lore', i)] ];
 }
 
 /* ============================================================
@@ -974,13 +1154,8 @@ function render(){
   }
 
   // rebuild panel
-  panel.innerHTML = `
-    <div class="prize">
-      <div class="glyph">${data.item.e}</div>
-      <div class="kicker">About the size of</div>
-      <div class="name">${data.item.n}</div>
-      <div class="blurb">${data.item.b}</div>
-    </div>`;
+  mode = 'len'; setToggle();
+  panel.innerHTML = prizeHTML(data, false);
 
   $('lenV').innerHTML = lenText(data.cm);
   $('wtV').innerHTML  = wtText(data.g);
@@ -1003,6 +1178,35 @@ function render(){
   panel.appendChild(hint);
   initScratch(c);
 }
+
+/* ============================================================
+   PRIZE + LENGTH/WEIGHT TOGGLE (scratch always reveals length)
+   ============================================================ */
+let mode = 'len';
+function prizeHTML(data, anim){
+  const p = mode === 'wt' ? weightItem(viewDay, data.g)
+    : { e:data.item.e, kicker:'About the size of', n:data.item.n, b:data.item.b };
+  return `<div class="prize${anim ? ' flip' : ''}">
+      <div class="glyph">${p.e}</div>
+      <div class="kicker">${p.kicker}</div>
+      <div class="name">${p.n}</div>
+      <div class="blurb">${p.b}</div>
+    </div>`;
+}
+function setToggle(){
+  $('tLen').classList.toggle('on', mode === 'len');
+  $('tWt').classList.toggle('on', mode === 'wt');
+  $('tLen').setAttribute('aria-selected', mode === 'len');
+  $('tWt').setAttribute('aria-selected', mode === 'wt');
+}
+function switchMode(m){
+  if(m === mode || !revealed) return;
+  const data = info(viewDay); if(!data) return;
+  mode = m; setToggle();
+  panel.innerHTML = prizeHTML(data, true);
+}
+$('tLen').addEventListener('click', () => switchMode('len'));
+$('tWt').addEventListener('click', () => switchMode('wt'));
 
 /* ============================================================
    SCRATCH LAYER
@@ -1167,6 +1371,6 @@ window.addEventListener('resize', () => {
 
 boot();
 </script>
-<div id="lu-stamp" style="font:500 11px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.02em;text-align:center;opacity:.55;padding:20px 16px 12px">Last updated Nov 6, 2026, 11:54 PM EST</div>
+<div id="lu-stamp" style="font:500 11px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.02em;text-align:center;opacity:.55;padding:20px 16px 12px">Last updated Nov 14, 2026, 1:40 PM EST</div>
 </body>
 </html>
